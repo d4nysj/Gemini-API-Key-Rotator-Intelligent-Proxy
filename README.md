@@ -44,7 +44,7 @@ Cuando trabajas con la API de Google Gemini en proyectos de producción o experi
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/GeminiKeys.git
+git clone https://github.com/d4nysj/Gemini-API-Key-Rotator-Intelligent-Proxy
 cd GeminiKeys
 ```
 
