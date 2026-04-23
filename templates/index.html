@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GeminiKey Rotator</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; background: #f0f2f5; color: #1c1e21; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 25px; }
+        h1 { color: #1877f2; }
+        h3 { margin-top: 0; color: #4b4f56; border-bottom: 1px solid #ebedf0; padding-bottom: 10px; margin-bottom: 15px; }
+        input[type="text"] { padding: 10px; width: 280px; border: 1px solid #ddd; border-radius: 6px; margin-right: 10px; }
+        button { padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #166fe5; }
+        button.danger { background: #fa3e3e; padding: 5px 10px; font-size: 0.8em; }
+        button.danger:hover { background: #e03535; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #f0f2f5; }
+        th { background: #f8f9fa; color: #8d949e; text-transform: uppercase; font-size: 0.8em; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .status-ok { color: #42b72a; font-weight: bold; }
+        .status-err { color: #fa3e3e; font-weight: bold; }
+        code { background: #f0f2f5; padding: 2px 5px; border-radius: 4px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>🔑 Gemini API Key & Model Rotator</h1>
+    
+    <div class="grid">
+        <div class="card">
+            <h3>Gestión de API Keys</h3>
+            <form action="/add" method="POST">
+                <input type="text" name="key" placeholder="API Key (AIzaSy...)" required>
+                <input type="text" name="description" placeholder="Descripción" required>
+                <button type="submit">Añadir</button>
+            </form>
+            <table>
+                <thead><tr><th>Key</th><th>Descripción</th><th>Acción</th></tr></thead>
+                <tbody>
+                {% for key in keys %}
+                <tr>
+                    <td><code>{{ key[0][:10] }}...</code></td>
+                    <td>{{ key[1] }}</td>
+                    <td>
+                        <form action="/delete" method="POST">
+                            <input type="hidden" name="key" value="{{ key[0] }}">
+                            <button type="submit" class="danger">Borrar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>Modelos Fallback</h3>
+            <form action="/add_model" method="POST">
+                <input type="text" name="name" placeholder="Nombre (ej: gemini-1.5-flash)" required>
+                <button type="submit">Añadir</button>
+            </form>
+            <table>
+                <thead><tr><th>Modelo</th><th>Acción</th></tr></thead>
+                <tbody>
+                {% for model in models %}
+                <tr>
+                    <td><code>{{ model }}</code></td>
+                    <td>
+                        <form action="/delete_model" method="POST">
+                            <input type="hidden" name="name" value="{{ model }}">
+                            <button type="submit" class="danger">Borrar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3>Actividad del Proxy (Últimas 50 peticiones)</h3>
+            <form action="/clear_logs" method="POST">
+                <button type="submit" style="background: #8d949e; font-size: 0.8em;">Limpiar Historial</button>
+            </form>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha/Hora</th>
+                    <th>Endpoint</th>
+                    <th>Modelo</th>
+                    <th>Key Usada</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td style="color: #8d949e; font-size: 0.85em;">{{ log[0] }}</td>
+                    <td><code>{{ log[1][:40] }}...</code></td>
+                    <td><code>{{ log[2] }}</code></td>
+                    <td>{{ log[3] }}</td>
+                    <td class="{{ 'status-ok' if log[4] == 200 else 'status-err' }}">{{ log[4] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>Utilidades</h3>
+        <a href="/export"><button style="background: #42b72a;">Exportar Keys</button></a>
+        <form action="/import" method="POST" enctype="multipart/form-data" style="display:inline; margin-left: 20px;">
+            <input type="file" name="file" accept=".txt" required>
+            <button type="submit">Importar Keys</button>
+        </form>
+    </div>
+</body>
+</html>
