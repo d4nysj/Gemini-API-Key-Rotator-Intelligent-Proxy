@@ -45,7 +45,7 @@ Cuando trabajas con la API de Google Gemini en proyectos de producción o experi
 
 ```bash
 git clone https://github.com/d4nysj/Gemini-API-Key-Rotator-Intelligent-Proxy
-cd GeminiKeys
+cd Gemini-API-Key-Rotator-Intelligent-Proxy
 ```
 
 ### 2. Instalar dependencias
